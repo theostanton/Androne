@@ -9,8 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import rx.Subscription
-import rx.subscriptions.CompositeSubscription
+import org.reactivestreams.Subscription
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
@@ -65,8 +64,4 @@ private fun getInetAddress(): InetAddress? {
 
 private operator fun CompositeDisposable.plusAssign(subscribe: Disposable?) {
   add(subscribe)
-}
-
-private operator fun CompositeSubscription.plusAssign(suscribe: Subscription) {
-  add(suscribe)
 }

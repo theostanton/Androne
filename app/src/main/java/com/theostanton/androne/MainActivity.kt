@@ -15,6 +15,7 @@ class MainActivity : Activity(), Logger {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    /*
 
     debug("onCreate")
     disposables += Sensors.gyro
@@ -57,12 +58,12 @@ class MainActivity : Activity(), Logger {
           //          debugTag("rate=${it.second} mag=", it.first.toString())
           debug("mag avgRate=$it")
         }
+        */
   }
 
 
   override fun onDestroy() {
     disposables.clear()
-    Sensors.close()
     super.onDestroy()
   }
 

@@ -14,7 +14,7 @@ import com.theostanton.lsm303.LSM303Driver
 import timber.log.Timber
 import java.io.IOException
 
-object Sensors : SensorEventListener {
+class Sensors(val context: Context) : SensorEventListener {
 
   private var lsm303driver: LSM303Driver? = null
   private var l3gd20driver: L3GD20Driver? = null
@@ -23,7 +23,7 @@ object Sensors : SensorEventListener {
   val acc = BehaviorRelay.create<AccReading>()
   val mag = BehaviorRelay.create<MagReading>()
 
-  fun init(context: Context) {
+  init {
     val sensorManager = context.getSystemService(android.content.Context.SENSOR_SERVICE) as SensorManager
 
     gyro.accept(GyroReading.empty())
