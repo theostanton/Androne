@@ -1,15 +1,21 @@
 package com.theostanton.androne
 
+import android.app.Application
+import android.content.Context
+import com.theostanton.androne.di.AppComponent
+import com.theostanton.androne.di.AppModule
+import com.theostanton.androne.di.DaggerAppComponent
 import com.theostanton.common.Logger
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
 import timber.log.Timber
 
-class BaseApplication : DaggerApplication(), Logger {
-  override fun applicationInjector(): AndroidInjector<out DaggerApplication>? {
-    return DaggerAppComponent
-  }
+class BaseApplication : Application(), Logger {
 
+  val component: AppComponent by lazy {
+    DaggerAppComponent
+        .builder()
+        .appModule(AppModule(this))
+        .build()
+  }
 
   override fun onCreate() {
     super.onCreate()
@@ -17,3 +23,6 @@ class BaseApplication : DaggerApplication(), Logger {
   }
 
 }
+
+val Context.component
+  get() = (applicationContext as BaseApplication).component

@@ -22,7 +22,7 @@ class MagModule {
   @Singleton
   @Provides
   fun providesMagObservable(magSource: MagSource): Observable<MagReading> {
-    return magSource.observe()
+    return magSource.observable
   }
 
 }

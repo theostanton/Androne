@@ -11,25 +11,60 @@ class OrientationSource(
     gyroObservable: Observable<GyroReading>
 ) : Logger {
 
+  companion object {
+    // Ratio of gyro vs acc angle readings
+    const val RATIO = 0.2f
+    const val INV_RATIO = 1f - RATIO
+  }
+
   private val readingsObservable =
       combineLatest(magObservable, accObservable, gyroObservable)
           .throttleFirst(100, TimeUnit.MILLISECONDS)
-          .doOnNext { (mag, acc, gyro) ->
-            log("$mag")
-            log("$acc")
-            log("$gyro")
-          }
           .share()
 
   init {
-    readingsObservable.subscribe()
+    readingsObservable
+        .subscribe { (mag, acc, gyro) ->
+          log("$mag")
+          log("$acc")
+          log("$gyro")
+        }
   }
 
-  fun observe(): Observable<Orientation> {
-    return readingsObservable.map { Orientation(1f, 2f, 3f) }
-  }
+  val observable = readingsObservable
+      .map { (mag, acc, gyro) ->
+        val u = acc.u * RATIO + gyro.u * INV_RATIO
+        val v = acc.v * RATIO + gyro.v * INV_RATIO
+        Orientation(
+            System.nanoTime(),
+            u,
+            gyro.uRate,
+            v,
+            gyro.vRate,
+            mag.w,
+            gyro.wRate
+        )
 
-
+      }
+      .share()
 }
 
-data class Orientation(val x: Float, val y: Float, val z: Float)
+/**
+ * 	a.angle[ROLL]   = atan2( (float)compass.a.x * ACCGAIN , sqrt( ACCGAINSQ * ( sq( (float)compass.a.y ) + sq( (float)compass.a.z ) ) ) ) ;
+ */
+
+/**
+ * u - roll
+ * v - pitch
+ * w - bearing
+ */
+
+data class Orientation(
+    val time: Long,
+    val u: Float,
+    val uRate: Float,
+    val v: Float,
+    val vRate: Float,
+    val w: Float,
+    val wRate: Float
+)

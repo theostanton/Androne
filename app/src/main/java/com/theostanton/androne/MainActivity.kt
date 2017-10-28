@@ -2,18 +2,26 @@ package com.theostanton.androne
 
 import android.app.Activity
 import android.os.Bundle
-import com.theostanton.common.*
-import com.theostanton.tx.TX
+import com.theostanton.common.Logger
+import com.theostanton.common.plusAssign
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 
 class MainActivity : Activity(), Logger {
 
   private val disposables = CompositeDisposable()
 
+  @Inject lateinit var orientationSource: OrientationSource
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    component.inject(this)
+    log("orientationSource=$orientationSource")
+    disposables += orientationSource.observable
+        .subscribe {
+          log("orientation->$it")
+        }
 
     /*
 

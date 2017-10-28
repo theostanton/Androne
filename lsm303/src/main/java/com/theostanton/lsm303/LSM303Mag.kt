@@ -5,6 +5,7 @@ import com.google.android.things.pio.PeripheralManagerService
 import com.theostanton.common.debug
 import com.theostanton.common.debugTag
 import com.theostanton.common.logError
+import com.theostanton.common.readFloat
 import java.lang.IllegalStateException
 
 class LSM303Mag(bus: String) : AutoCloseable {
@@ -35,7 +36,7 @@ class LSM303Mag(bus: String) : AutoCloseable {
     try {
       device.writeRegByte(0x01, 0x00)
     } catch (e: Exception) {
-      logError("LSM303Mag init erro ${e.message}")
+      logError("LSM303Mag init error ${e.message}")
     }
   }
 
@@ -45,23 +46,37 @@ class LSM303Mag(bus: String) : AutoCloseable {
   }
 
 
+  /*
   fun readSample(): FloatArray {
     device?.apply {
       debug("getting sample")
 
-      try {
+      return try {
         val x = readRegByte(0x03)
         debugTag("LSM303Mag", "x=$x")
-        return floatArrayOf(x.toFloat())
+        floatArrayOf(x.toFloat())
       } catch (e: Exception) {
         logError("readSample error ${e.message}")
-        return floatArrayOf()
+        floatArrayOf()
       }
 //      val x = readFloat(OUT_X_H_M, OUT_X_L_M, "x")
 //      val y = readFloat(OUT_Y_H_M, OUT_Y_L_M, "y")
 //      val z = readFloat(OUT_Z_H_M, OUT_Z_L_M, "z")
 //      debugTag("result", "x=$x y=$y z=$z")
 
+    }
+    error("Device not connected")
+  }
+  */
+
+  fun readSample(): FloatArray {
+    device?.apply {
+      debug("getting sample")
+      val x = readFloat(OUT_X_H_M, OUT_X_L_M, "x")
+      val y = readFloat(OUT_Y_H_M, OUT_Y_L_M, "y")
+      val z = readFloat(OUT_Z_H_M, OUT_Z_L_M, "z")
+      debugTag("result", "x=$x y=$y z=$z")
+      return floatArrayOf(x, y, z)
     }
     error("Device not connected")
   }

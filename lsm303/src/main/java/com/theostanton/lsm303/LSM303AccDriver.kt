@@ -1,4 +1,4 @@
-package com.theostanton.l3gd20
+package com.theostanton.lsm303
 
 import android.hardware.Sensor
 import android.hardware.SensorManager
@@ -7,17 +7,16 @@ import com.google.android.things.userdriver.UserSensor
 import com.google.android.things.userdriver.UserSensorDriver
 import com.google.android.things.userdriver.UserSensorReading
 
-class L3GD20Driver(bus: String) : AutoCloseable {
+class LSM303AccDriver(bus: String) : AutoCloseable {
 
-  var device: L3GD20 = L3GD20(bus)
-  var userSensor: UserSensor? = null
+  var device = LSM303Acc(bus)
+
+  private var userSensor: UserSensor? = null
 
   fun register() {
-    device.apply {
-      if (userSensor == null) {
-        userSensor = build(this)
-        UserDriverManager.getManager().registerSensor(userSensor)
-      }
+    if (userSensor == null) {
+      userSensor = build(device)
+      UserDriverManager.getManager().registerSensor(userSensor)
     }
   }
 
@@ -28,26 +27,26 @@ class L3GD20Driver(bus: String) : AutoCloseable {
     }
   }
 
-
   override fun close() {
     device.close()
   }
 
+
   companion object {
-    fun build(l3GD20: L3GD20): UserSensor {
+
+    fun build(lsm303: LSM303Acc): UserSensor {
       return UserSensor.Builder()
-          .setType(Sensor.TYPE_GYROSCOPE)
-          .setName(L3GD20.DRIVER_NAME)
+          .setType(Sensor.TYPE_ACCELEROMETER)
+          .setName(LSM303Acc.DRIVER_NAME)
           .setMinDelay(1000)
           .setMaxDelay(2000)
           .setDriver(object : UserSensorDriver() {
             override fun read(): UserSensorReading {
-              val sample = l3GD20.readSample()
+              val sample = lsm303.readSample()
               return UserSensorReading(sample, SensorManager.SENSOR_STATUS_ACCURACY_HIGH)
             }
           })
           .build()
     }
   }
-
 }

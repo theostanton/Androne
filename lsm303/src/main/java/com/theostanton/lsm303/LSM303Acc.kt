@@ -12,7 +12,7 @@ class LSM303Acc(bus: String) : AutoCloseable {
     val DRIVER_NAME = "LSM303Accel"
   }
 
-  var device: I2cDevice? = null
+  private var device: I2cDevice? = null
 
   init {
     val pioService = PeripheralManagerService()
